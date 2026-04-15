@@ -62,14 +62,23 @@ body{
 /* ═══════════════════════════════════════════════════
    LAYER WRAPPER SYSTEM
    Each .layer-N wraps its child .layer-(N+1)
+   NESTED BOX EFFECT: overflow + max-height per layer
 ═══════════════════════════════════════════════════ */
 .layer{
   position:relative;z-index:10;
   margin:0 auto;
   border-radius:24px;
   transition:box-shadow .3s;
+  overflow:auto;
+  max-height:85vh;
 }
 .layer:hover{filter:brightness(1.02)}
+
+/* Custom scrollbar for nested layers */
+.layer::-webkit-scrollbar{width:6px}
+.layer::-webkit-scrollbar-track{background:transparent}
+.layer::-webkit-scrollbar-thumb{background:#ffffff15;border-radius:3px}
+.layer::-webkit-scrollbar-thumb:hover{background:#ffffff30}
 
 /* LAYER 0 — outer container */
 .l0{
@@ -78,6 +87,7 @@ body{
   border:3px solid #b388ff44;
   box-shadow:0 0 80px #b388ff22,0 0 0 1px #ffffff08;
   padding:32px;margin:0 auto 40px;
+  max-height:90vh;
 }
 .layer-badge{
   display:inline-flex;align-items:center;gap:8px;
@@ -807,6 +817,87 @@ footer{height:40px}
 
 <script>
 /* ═══════════════════════════════════════════════
+   BACKEND CONFIG
+═══════════════════════════════════════════════ */
+const API = ''; // same origin when served by backend
+let ws = null;
+let wsConnected = false;
+
+function connectWS(){
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${proto}//${location.host}/ws`);
+  ws.onopen = ()=>{
+    wsConnected = true;
+    document.getElementById('sb-backend').textContent = 'ws:online ✓';
+    document.getElementById('sb-backend').style.color = '#69f0ae';
+  };
+  ws.onclose = ()=>{
+    wsConnected = false;
+    document.getElementById('sb-backend').textContent = 'ws:offline';
+    document.getElementById('sb-backend').style.color = '#ffd54f';
+    setTimeout(connectWS, 3000);
+  };
+  ws.onmessage = (e)=>{
+    try{
+      const msg = JSON.parse(e.data);
+      handleWSEvent(msg);
+    }catch(err){}
+  };
+}
+
+function handleWSEvent(msg){
+  const {event, payload} = msg;
+  if(event === 'tick'){
+    // Update qubit values from backend
+    if(payload.qubit_sample){
+      Object.entries(payload.qubit_sample).forEach(([label, val])=>{
+        const idx = qLabels.indexOf(label);
+        if(idx >= 0){
+          const el = document.getElementById(`qv-${idx}`);
+          if(el) el.textContent = val.toFixed(4);
+        }
+      });
+    }
+  }
+  else if(event === 'avatar.shake'){
+    // Backend confirmed shake
+  }
+  else if(event === 'quantum.collapse'){
+    const idx = qLabels.indexOf(payload.label);
+    if(idx >= 0){
+      const el = document.getElementById(`qv-${idx}`);
+      if(el){
+        el.textContent = payload.value.toFixed(4);
+        el.style.color = '#fff';
+        el.style.textShadow = '0 0 20px #fff';
+        setTimeout(()=>{ el.style.color = '#ffd54f'; el.style.textShadow = '0 0 10px #ffd54f'; }, 600);
+      }
+    }
+  }
+  else if(event === 'script.run'){
+    // Backend script run — display output
+    if(payload.output){
+      const con = document.getElementById('console-lines');
+      con.innerHTML = '';
+      payload.output.forEach((line, i)=>{
+        setTimeout(()=>{
+          const div = document.createElement('div');
+          div.textContent = line;
+          div.style.cssText = `color:#69f0ae;opacity:0;transition:opacity .4s;margin:2px 0;font-family:'Share Tech Mono';font-size:.8rem`;
+          con.appendChild(div);
+          setTimeout(()=>div.style.opacity='1', 30);
+        }, i * 600);
+      });
+    }
+  }
+  else if(event === 'void.echo'){
+    // Void response from backend
+  }
+}
+
+connectWS();
+
+/* ═══════════════════════════════════════════════
    COSMOS PARTICLE SYSTEM
 ═══════════════════════════════════════════════ */
 const canvas = document.getElementById('cosmos');
@@ -862,8 +953,16 @@ function resetAnim(el,cls,delay=1800){
   el.style.animation=`${cls} .2s cubic-bezier(.36,.07,.19,.97) infinite`;
   setTimeout(()=>{ el.style.animation=''; },delay);
 }
-function shakeBuddy(){resetAnim(document.getElementById('buddy-head'),'bobble-a');}
-function shakeWM(){resetAnim(document.getElementById('wm-head'),'wm-shake',1200);}
+function shakeBuddy(){
+  resetAnim(document.getElementById('buddy-head'),'bobble-a');
+  if(wsConnected) ws.send(JSON.stringify({event:'shake', avatar_id:'buddy-001'}));
+  else fetch(`${API}/api/avatars/buddy-001/shake`, {method:'POST'}).catch(()=>{});
+}
+function shakeWM(){
+  resetAnim(document.getElementById('wm-head'),'wm-shake',1200);
+  if(wsConnected) ws.send(JSON.stringify({event:'shake', avatar_id:'wm-01'}));
+  else fetch(`${API}/api/avatars/wm-01/shake`, {method:'POST'}).catch(()=>{});
+}
 function gorillaPound(){
   const g=document.querySelector('.gorilla-emoji');
   g.style.animation='none';void g.offsetWidth;
@@ -877,6 +976,8 @@ document.head.appendChild(gorillaStyle);
 function superShake(){
   shakeWM();shakeBuddy();
   burst(40);
+  if(wsConnected) ws.send(JSON.stringify({event:'shake', avatar_id:'buddy-001'}));
+  fetch(`${API}/api/avatars/super-shake`, {method:'POST'}).catch(()=>{});
 }
 function burst(n){
   const emojis=['🍉','⭐','🎉','💥','🌈','😂','🥹','💪','🤍','⚡'];
@@ -912,39 +1013,59 @@ function toggleStatic(){
 }
 
 /* ═══════════════════════════════════════════════
-   GOLIATH SCRIPT RUNNER
+   GOLIATH SCRIPT RUNNER — SSE Stream
 ═══════════════════════════════════════════════ */
-const scriptLines=[
-  {t:'>>> Running introduce_giant() 🚀',c:'#69f0ae',d:0},
-  {t:'Goliath... haha jk 😂',           c:'#a5d6ff',d:600},
-  {t:'G-O-L-I-A-S 😂😂😂😂😂',         c:'#ffeb3b',d:1300},
-  {t:'(the gentle giant) 🥰',            c:'#ff8a80',d:2100},
-  {t:"He's big. He's kind. 💪🤍",       c:'#ce93d8',d:2900},
-  {t:'>>> Script complete ✅',            c:'#69f0ae',d:3700},
-];
 function runScript(){
-  const con=document.getElementById('console-lines');
-  con.innerHTML='';
-  scriptLines.forEach(({t,c,d})=>{
-    setTimeout(()=>{
-      const div=document.createElement('div');
-      div.textContent=t;
-      div.style.cssText=`color:${c};opacity:0;transition:opacity .4s;margin:2px 0;font-family:'Share Tech Mono';font-size:.8rem`;
-      con.appendChild(div);
-      setTimeout(()=>div.style.opacity='1',30);
-    },d);
-  });
-  // Also fetch from backend if available
-  fetch('/api/run-script')
-    .then(r=>r.json())
-    .then(d=>{
-      document.getElementById('sb-backend').textContent='connected ✓';
-    })
-    .catch(()=>{
-      document.getElementById('sb-backend').textContent='standalone mode';
+  const con = document.getElementById('console-lines');
+  con.innerHTML = '';
+
+  // Use SSE stream from backend
+  const evtSource = new EventSource(`${API}/api/script/stream`);
+  let lineCount = 0;
+
+  evtSource.onmessage = (e)=>{
+    const data = JSON.parse(e.data);
+    if(data.line_index === -1){
+      // EOF
+      evtSource.close();
+      const done = document.createElement('div');
+      done.textContent = '>>> Script complete ✅';
+      done.style.cssText = 'color:#69f0ae;margin:2px 0;font-family:"Share Tech Mono";font-size:.8rem';
+      con.appendChild(done);
+      return;
+    }
+    const div = document.createElement('div');
+    div.textContent = data.line;
+    div.style.cssText = `color:#69f0ae;opacity:0;transition:opacity .4s;margin:2px 0;font-family:'Share Tech Mono';font-size:.8rem`;
+    con.appendChild(div);
+    setTimeout(()=>div.style.opacity='1', 30);
+    lineCount++;
+  };
+
+  evtSource.onerror = ()=>{
+    evtSource.close();
+    // Fallback: local animation
+    const fallback = [
+      {t:'>>> Running introduce_giant() 🚀',c:'#69f0ae'},
+      {t:'Goliath... haha jk 😂',           c:'#a5d6ff'},
+      {t:'G-O-L-I-A-S 😂😂😂😂',         c:'#ffeb3b'},
+      {t:'(the gentle giant) 🥰',            c:'#ff8a80'},
+      {t:"He's big. He's kind. 💪🤍",       c:'#ce93d8'},
+      {t:'>>> Script complete ✅',            c:'#69f0ae'},
+    ];
+    con.innerHTML = '';
+    fallback.forEach(({t,c}, i)=>{
+      setTimeout(()=>{
+        const div = document.createElement('div');
+        div.textContent = t;
+        div.style.cssText = `color:${c};opacity:0;transition:opacity .4s;margin:2px 0;font-family:'Share Tech Mono';font-size:.8rem`;
+        con.appendChild(div);
+        setTimeout(()=>div.style.opacity='1', 30);
+      }, i * 600);
     });
+  };
 }
-setTimeout(runScript,1500);
+setTimeout(runScript, 1500);
 
 /* ═══════════════════════════════════════════════
    TV CHANNEL CYCLE
@@ -1029,14 +1150,29 @@ qLabels.forEach((lbl,i)=>{
 
 function collapseQuantum(){
   qLabels.forEach((_,i)=>collapseQubit(i));
+  fetch(`${API}/api/quantum/collapse-all`, {method:'POST'}).catch(()=>{});
 }
 function collapseQubit(i){
-  const el=document.getElementById(`qv-${i}`);
-  if(!el)return;
-  el.textContent=(Math.random()).toFixed(4);
-  el.style.color='#fff';
-  el.style.textShadow='0 0 20px #fff';
-  setTimeout(()=>{ el.style.color='#ffd54f'; el.style.textShadow='0 0 10px #ffd54f'; },600);
+  const label = qLabels[i];
+  const el = document.getElementById(`qv-${i}`);
+  if(!el) return;
+
+  // Call backend
+  fetch(`${API}/api/quantum/collapse/${encodeURIComponent(label)}`, {method:'POST'})
+    .then(r=>r.json())
+    .then(d=>{
+      el.textContent = d.value.toFixed(4);
+      el.style.color = '#fff';
+      el.style.textShadow = '0 0 20px #fff';
+      setTimeout(()=>{ el.style.color = '#ffd54f'; el.style.textShadow = '0 0 10px #ffd54f'; }, 600);
+    })
+    .catch(()=>{
+      // Fallback: local random
+      el.textContent = (Math.random()).toFixed(4);
+      el.style.color = '#fff';
+      el.style.textShadow = '0 0 20px #fff';
+      setTimeout(()=>{ el.style.color = '#ffd54f'; el.style.textShadow = '0 0 10px #ffd54f'; }, 600);
+    });
 }
 
 // Quantum stream
@@ -1065,41 +1201,59 @@ const voidCmds=[
 ];
 let voidIdx=0;
 function awakeVoid(){
-  const t=document.getElementById('void-terminal');
-  const cmd=voidCmds[voidIdx%voidCmds.length];
-  voidIdx++;
-  const pLine=document.createElement('span');
-  pLine.className='t-line';
-  pLine.innerHTML=`<span class="t-prompt">${cmd.p}</span> <span class="t-cmd">${cmd.c}</span>`;
-  const oLine=document.createElement('span');
-  oLine.className='t-line';
-  oLine.innerHTML=`<span class="t-aura">${cmd.o}</span>`;
-  const cur=document.getElementById('void-cursor');
-  t.insertBefore(oLine,cur);
-  t.insertBefore(pLine,oLine);
-  // flash signature
-  document.getElementById('aura-sig').style.animation='none';
-  void document.getElementById('aura-sig').offsetWidth;
-  document.getElementById('aura-sig').style.animation='aura-pulse 3s ease-in-out infinite';
+  fetch(`${API}/api/void/echo`)
+    .then(r=>r.json())
+    .then(d=>{
+      const t=document.getElementById('void-terminal');
+      const cur=document.getElementById('void-cursor');
+      const pLine=document.createElement('span');
+      pLine.className='t-line';
+      pLine.innerHTML=`<span class="t-prompt">root@void:~$</span> <span class="t-cmd">void.echo</span>`;
+      const oLine=document.createElement('span');
+      oLine.className='t-line';
+      oLine.innerHTML=`<span class="t-aura">${d.void}</span>`;
+      t.insertBefore(oLine,cur);
+      t.insertBefore(pLine,oLine);
+      document.getElementById('aura-sig').style.animation='none';
+      void document.getElementById('aura-sig').offsetWidth;
+      document.getElementById('aura-sig').style.animation='aura-pulse 3s ease-in-out infinite';
+    })
+    .catch(()=>{
+      const cmd=voidCmds[voidIdx%voidCmds.length];
+      voidIdx++;
+      const t=document.getElementById('void-terminal');
+      const cur=document.getElementById('void-cursor');
+      const pLine=document.createElement('span');
+      pLine.className='t-line';
+      pLine.innerHTML=`<span class="t-prompt">${cmd.p}</span> <span class="t-cmd">${cmd.c}</span>`;
+      const oLine=document.createElement('span');
+      oLine.className='t-line';
+      oLine.innerHTML=`<span class="t-aura">${cmd.o}</span>`;
+      t.insertBefore(oLine,cur);
+      t.insertBefore(pLine,oLine);
+      document.getElementById('aura-sig').style.animation='none';
+      void document.getElementById('aura-sig').offsetWidth;
+      document.getElementById('aura-sig').style.animation='aura-pulse 3s ease-in-out infinite';
+    });
 }
 
 /* ═══════════════════════════════════════════════
    BACKEND HEALTH CHECK
 ═══════════════════════════════════════════════ */
 function checkBackend(){
-  fetch('/api/health')
+  fetch(`${API}/api/health`)
     .then(r=>r.json())
     .then(d=>{
-      document.getElementById('sb-backend').textContent=`${d.status} · ${d.uptime}s ✓`;
-      document.getElementById('sb-backend').style.color='#69f0ae';
+      document.getElementById('sb-backend').textContent = `v${d.version} · ${d.uptime}s · ${d.ws_clients}ws`;
+      document.getElementById('sb-backend').style.color = '#69f0ae';
     })
     .catch(()=>{
-      document.getElementById('sb-backend').textContent='standalone mode';
-      document.getElementById('sb-backend').style.color='#ffd54f';
+      document.getElementById('sb-backend').textContent = 'standalone mode';
+      document.getElementById('sb-backend').style.color = '#ffd54f';
     });
 }
 checkBackend();
-setInterval(checkBackend,10000);
+setInterval(checkBackend, 10000);
 
 // Auto-collapse qubits every 5s
 setInterval(()=>{
