@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>🌀 7-Layer Simulation · 1ARCHIT3CT1</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&family=Share+Tech+Mono&family=Righteous&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════
+   RESET & TOKENS
+═══════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --c0:#0a0015;   /* L0 outer void */
+  --c1:#1a0533;   /* L1 avatar room */
+  --c2:#fff5e6;   /* L2 living room */
+  --c3:#0d1117;   /* L3 TV / code */
+  --c4:#0a1a0a;   /* L4 arcade */
+  --c5:#1a001a;   /* L5 dream */
+  --c6:#000d1a;   /* L6 quantum */
+  --c7:#000000;   /* L7 void */
+  --pink:#ff6eb4;
+  --yellow:#ffeb3b;
+  --green:#69f0ae;
+  --purple:#b388ff;
+  --orange:#ffab40;
+  --cyan:#40c4ff;
+  --red:#ff5252;
+  --gold:#ffd54f;
+}
+html,body{width:100%;min-height:100vh;overflow-x:hidden}
+body{
+  background:var(--c0);
+  font-family:'Nunito',sans-serif;
+  color:#fff;
+  cursor:crosshair;
+}
+
+/* ═══════════════════════════════════════════════════
+   PARTICLE CANVAS (Layer 0 bg)
+═══════════════════════════════════════════════════ */
+#cosmos{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ═══════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════ */
+.site-header{
+  position:relative;z-index:10;
+  text-align:center;padding:40px 20px 20px;
+}
+.site-header h1{
+  font-family:'Righteous',cursive;
+  font-size:clamp(2rem,5vw,4.5rem);
+  background:linear-gradient(135deg,#ff6eb4,#ffeb3b,#69f0ae,#40c4ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 30px #b388ff88);
+  animation:hue-drift 8s linear infinite;
+}
+@keyframes hue-drift{0%{filter:drop-shadow(0 0 30px #b388ff88) hue-rotate(0deg)}100%{filter:drop-shadow(0 0 30px #b388ff88) hue-rotate(360deg)}}
+.site-header p{color:#9e8fb2;font-size:0.95rem;margin-top:6px;font-family:'Share Tech Mono',monospace}
+
+/* ═══════════════════════════════════════════════════
+   LAYER WRAPPER SYSTEM
+   Each .layer-N wraps its child .layer-(N+1)
+═══════════════════════════════════════════════════ */
+.layer{
+  position:relative;z-index:10;
+  margin:0 auto;
+  border-radius:24px;
+  transition:box-shadow .3s;
+}
+.layer:hover{filter:brightness(1.02)}
+
+/* LAYER 0 — outer container */
+.l0{
+  max-width:1200px;
+  background:linear-gradient(145deg,#12003a 0%,#1a0533 50%,#0a1040 100%);
+  border:3px solid #b388ff44;
+  box-shadow:0 0 80px #b388ff22,0 0 0 1px #ffffff08;
+  padding:32px;margin:0 auto 40px;
+}
+.layer-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Share Tech Mono',monospace;font-size:0.75rem;
+  padding:4px 12px;border-radius:50px;margin-bottom:14px;
+  letter-spacing:1px;text-transform:uppercase;
+}
+.badge-0{background:#b388ff22;border:1px solid #b388ff55;color:#b388ff}
+.badge-1{background:#ff6eb422;border:1px solid #ff6eb455;color:#ff6eb4}
+.badge-2{background:#ffab4022;border:1px solid #ffab4055;color:#ffab40}
+.badge-3{background:#40c4ff22;border:1px solid #40c4ff55;color:#40c4ff}
+.badge-4{background:#69f0ae22;border:1px solid #69f0ae55;color:#69f0ae}
+.badge-5{background:#ff525222;border:1px solid #ff525255;color:#ff5252}
+.badge-6{background:#ffd54f22;border:1px solid #ffd54f55;color:#ffd54f}
+.badge-7{background:#ffffff11;border:1px solid #ffffff33;color:#fff}
+
+/* ═══════════════════════════════════════════════════
+   LAYER 1 — AVATAR ROOM
+═══════════════════════════════════════════════════ */
+.l1{
+  background:linear-gradient(135deg,#1a0030 0%,#2d0050 100%);
+  border:3px solid #ff6eb466;
+  box-shadow:0 0 40px #ff6eb422;
+  padding:28px;margin-top:0;
+}
+.avatar-room{
+  display:flex;align-items:flex-end;justify-content:center;
+  gap:40px;padding:20px 0 10px;flex-wrap:wrap;
+}
+
+/* Floor */
+.avatar-room::after{
+  content:'';display:block;
+  width:100%;height:8px;
+  background:linear-gradient(90deg,transparent,#ff6eb444,transparent);
+  border-radius:50%;
+  position:absolute;bottom:20px;left:0;
+}
+
+/* BOBBLEHEAD BASE */
+.bobble{display:flex;flex-direction:column;align-items:center;cursor:pointer;gap:0}
+.bobble-name{
+  font-family:'Fredoka One',cursive;font-size:0.9rem;
+  margin-top:8px;text-align:center;
+}
+
+/* Buddy */
+.buddy-head{
+  width:100px;height:108px;
+  background:radial-gradient(ellipse at 35% 30%,#ffe0b2,#ffb74d);
+  border-radius:50% 50% 46% 46%;border:3px solid #e65100;
+  animation:bobble-a 2s ease-in-out infinite;transform-origin:bottom center;
+  box-shadow:0 8px 24px #e6510033;position:relative;
+}
+@keyframes bobble-a{
+  0%,100%{transform:rotate(-5deg)}
+  30%{transform:rotate(7deg) translateY(-5px)}
+  60%{transform:rotate(-3deg) translateY(2px)}
+  80%{transform:rotate(6deg) translateY(-7px)}
+}
+.buddy-body{
+  width:72px;height:80px;
+  background:linear-gradient(180deg,#42a5f5,#1565c0);
+  border-radius:10px 10px 18px 18px;border:3px solid #0d47a1;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;margin-top:2px;
+}
+.buddy-name{color:#42a5f5}
+
+/* WATERMELON HEAD */
+.wm-head{
+  width:120px;height:132px;
+  background:radial-gradient(ellipse at 40% 30%,#ff6b8a,#e8173a 60%,#c0392b 100%);
+  border-radius:50% 50% 48% 48%;
+  border:6px solid #2d6a1f;
+  animation:wm-shake 0.7s cubic-bezier(.36,.07,.19,.97) infinite;
+  transform-origin:bottom center;
+  box-shadow:0 8px 40px #e8173a66;
+  position:relative;overflow:hidden;
+}
+@keyframes wm-shake{
+  0%,100%{transform:rotate(-8deg) translateX(-4px)}
+  15%{transform:rotate(11deg) translateX(5px) translateY(-6px)}
+  30%{transform:rotate(-6deg) translateX(-6px) translateY(-3px)}
+  50%{transform:rotate(10deg) translateX(6px) translateY(-8px)}
+  70%{transform:rotate(-7deg) translateX(-4px) translateY(-4px)}
+  85%{transform:rotate(9deg) translateX(5px) translateY(-5px)}
+}
+.wm-head::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(160deg,transparent 0,transparent 14px,#2d6a1f33 14px,#2d6a1f33 17px);
+  border-radius:inherit;
+}
+.wm-seeds{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;font-size:0.9rem;
+}
+.wm-body{
+  width:88px;height:90px;
+  background:linear-gradient(180deg,#a5d6a7,#2e7d32);
+  border-radius:10px 10px 18px 18px;border:3px solid #1b5e20;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin-top:2px;
+}
+.wm-name{color:#69f0ae}
+
+/* shared face */
+.face-eyes{display:flex;justify-content:space-around;padding:24px 16px 0}
+.eye{
+  width:16px;height:16px;background:#0d001a;border-radius:50%;
+  position:relative;animation:blink 5s infinite;
+}
+.eye::after{content:'';width:5px;height:5px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%,98%{transform:scaleY(0.05)}}
+.face-mouth{
+  width:38px;height:18px;border:3px solid #0d001a;
+  border-top:none;border-radius:0 0 38px 38px;margin:8px auto 0;
+}
+
+/* Arrow watching TV */
+.watch-label{
+  font-family:'Fredoka One',cursive;color:#ffeb3b;
+  font-size:1.1rem;text-align:center;margin:0 10px;
+  animation:bounce-x 1s ease-in-out infinite;
+  align-self:center;line-height:1.3;
+}
+@keyframes bounce-x{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+
+/* ═══════════════════════════════════════════════════
+   LAYER 2 — LIVING ROOM
+═══════════════════════════════════════════════════ */
+.l2{
+  background:linear-gradient(135deg,#fff8e1 0%,#fce4ec 100%);
+  border:3px solid #ffab4066;
+  box-shadow:0 0 40px #ffab4022;
+  padding:24px;margin-top:24px;color:#1a0010;
+}
+.l2 .layer-badge{color:#e65100}
+
+/* TV wrapper */
+.tv-outer{display:flex;justify-content:center;margin-bottom:16px}
+.tv-cabinet{
+  background:linear-gradient(160deg,#3e2723,#212121);
+  border-radius:20px;padding:16px;
+  border:4px solid #111;
+  box-shadow:0 16px 60px #00000077,0 0 0 6px #333,0 0 80px #40c4ff11;
+  width:700px;max-width:100%;
+}
+.tv-screen-wrap{
+  background:#000;border-radius:12px;overflow:hidden;
+  border:3px solid #000;position:relative;min-height:320px;
+}
+
+/* ═══════════════════════════════════════════════════
+   LAYER 3 — TV / CODE SCREEN
+═══════════════════════════════════════════════════ */
+.l3{
+  background:#0d1117;
+  min-height:320px;padding:18px;
+  display:flex;flex-direction:column;gap:10px;position:relative;
+}
+/* scanlines */
+.l3::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);
+  pointer-events:none;z-index:2;
+}
+
+/* GORILLA — right side of code block */
+.gorilla-container{
+  position:absolute;top:36px;right:18px;z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  animation:gorilla-bounce 2s ease-in-out infinite;
+}
+.gorilla-emoji{
+  font-size:3.5rem;
+  filter:drop-shadow(0 0 12px #ff6eb488);
+  cursor:pointer;
+  transition:transform .15s;
+  user-select:none;
+}
+.gorilla-emoji:hover{transform:scale(1.2) rotate(-5deg)}
+.gorilla-label{
+  font-family:'Share Tech Mono',monospace;font-size:0.6rem;
+  color:#ff6eb4;opacity:.7;letter-spacing:1px;text-transform:uppercase;
+}
+@keyframes gorilla-bounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+.tv-hud{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#69f0ae;opacity:.8;
+}
+.code-block{
+  background:#0a0f14;border:1px solid #30363d;border-radius:8px;
+  padding:16px;font-family:'Share Tech Mono',monospace;font-size:0.82rem;
+  flex:1;position:relative;z-index:1;
+}
+.ck{color:#ff7b72}.cs{color:#a5d6ff}.cc{color:#6e7681;font-style:italic}
+.cf{color:#d2a8ff}.cv{color:#ffa657}.ce{color:#ffeb3b;font-size:1em}
+.code-line{display:block;line-height:1.6}
+.cursor-line{
+  border-right:2px solid #69f0ae;
+  animation:cursor-blink .6s step-end infinite;
+  display:inline-block;
+}
+@keyframes cursor-blink{50%{border-color:transparent}}
+
+/* console output */
+.console-out{
+  background:#060d06;border:1px solid #1b3a1b;border-radius:8px;
+  padding:12px;font-family:'Share Tech Mono',monospace;font-size:0.85rem;
+  color:#69f0ae;min-height:70px;position:relative;z-index:1;
+}
+.console-prompt{color:#3a5a3a;margin-bottom:4px}
+
+/* static overlay */
+.tv-static{
+  position:absolute;inset:0;z-index:5;border-radius:inherit;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.tv-static.on{opacity:1;animation:static-flicker .08s infinite}
+@keyframes static-flicker{0%,100%{opacity:.25}50%{opacity:.55}}
+
+/* TV chrome */
+.tv-bezel{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 6px}
+.tv-knobs{display:flex;gap:8px}
+.tv-knob{
+  width:14px;height:14px;border-radius:50%;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.tv-knob:hover{transform:scale(1.3);box-shadow:0 0 8px currentColor}
+.tv-brand{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#555;letter-spacing:2px}
+.tv-stand-wrap{display:flex;flex-direction:column;align-items:center}
+.tv-stand-legs{display:flex;justify-content:space-around;width:200px;padding:0 20px}
+.tv-stand-leg{width:12px;height:22px;background:#2a2a2a;border-radius:0 0 6px 6px}
+.tv-stand-base{height:6px;width:220px;background:#1a1a1a;border-radius:4px}
+
+/* Sofa */
+.sofa-row{display:flex;justify-content:center;margin-top:18px}
+.sofa{
+  background:linear-gradient(180deg,#ef9a9a,#e53935);
+  border:3px solid #b71c1c;border-radius:16px 16px 8px 8px;
+  width:500px;max-width:100%;height:64px;
+  display:flex;padding:8px;gap:4px;
+  box-shadow:0 8px 24px #b71c1c44;
+}
+.sofa-arm{width:28px;background:#c62828;border-radius:10px;border:2px solid #b71c1c}
+.sofa-cushion{flex:1;background:linear-gradient(180deg,#ffab91,#ff5722);border-radius:8px;border:2px solid #bf360c}
+
+/* ═══════════════════════════════════════════════════
+   LAYER 4 — ARCADE INSIDE THE TV
+═══════════════════════════════════════════════════ */
+.l4{
+  background:linear-gradient(145deg,#001a00 0%,#0a2a0a 100%);
+  border:3px solid #69f0ae55;
+  box-shadow:0 0 40px #69f0ae11;
+  padding:22px;margin-top:20px;
+}
+.arcade-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px}
+.arcade-cab{
+  background:linear-gradient(160deg,#0d2a0d,#1a4a1a);
+  border:2px solid #69f0ae33;border-radius:12px;padding:12px;
+  text-align:center;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+  position:relative;overflow:hidden;
+}
+.arcade-cab:hover{transform:scale(1.04);box-shadow:0 0 20px #69f0ae44}
+.arcade-screen{
+  background:#000;border-radius:6px;padding:8px;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:#69f0ae;min-height:70px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;
+  border:2px solid #1a3a1a;position:relative;overflow:hidden;
+}
+.arcade-screen::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,100,0,.05) 2px,rgba(0,100,0,.05) 3px);
+}
+.arcade-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#a5d6a7;margin-top:8px}
+.arcade-score{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:#4caf50;margin-top:2px}
+/* pixel art sprite animations */
+.sprite{font-size:1.4rem;animation:sprite-hop .4s steps(2) infinite}
+@keyframes sprite-hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.pixel-bar{
+  width:80%;height:6px;background:#0d2a0d;border-radius:3px;overflow:hidden;margin-top:4px;
+}
+.pixel-fill{
+  height:100%;background:linear-gradient(90deg,#69f0ae,#00e676);
+  border-radius:3px;animation:fill-pulse 2s ease-in-out infinite;
+}
+@keyframes fill-pulse{0%,100%{width:65%}50%{width:95%}}
+
+/* ═══════════════════════════════════════════════════
+   LAYER 5 — DREAM SEQUENCE
+═══════════════════════════════════════════════════ */
+.l5{
+  background:radial-gradient(ellipse at 30% 40%,#2d003a 0%,#1a001a 60%,#000 100%);
+  border:3px solid #ff525244;
+  box-shadow:0 0 40px #ff525211;
+  padding:22px;margin-top:20px;
+  position:relative;overflow:hidden;
+}
+/* floating dream orbs */
+.dream-orbs{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.orb{
+  position:absolute;border-radius:50%;
+  animation:float-orb linear infinite;opacity:.4;
+  filter:blur(12px);
+}
+@keyframes float-orb{
+  0%{transform:translateY(100%) translateX(0)}
+  100%{transform:translateY(-20%) translateX(20px)}
+}
+.dream-content{position:relative;z-index:2;display:flex;flex-direction:column;gap:16px}
+.dream-card{
+  background:#ffffff08;border:1px solid #ff525233;border-radius:14px;
+  padding:14px;backdrop-filter:blur(6px);
+}
+.dream-card h3{font-family:'Fredoka One',cursive;color:#ff8a80;font-size:1rem;margin-bottom:6px}
+.dream-card p{font-size:0.82rem;color:#ce93d8;line-height:1.5}
+.dream-stars{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.dstar{
+  font-size:1rem;animation:twinkle-d 1.5s ease-in-out infinite;
+  display:inline-block;
+}
+@keyframes twinkle-d{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+
+/* ═══════════════════════════════════════════════════
+   LAYER 6 — QUANTUM DATA ROOM
+═══════════════════════════════════════════════════ */
+.l6{
+  background:linear-gradient(145deg,#00050f 0%,#000d1a 100%);
+  border:3px solid #ffd54f55;
+  box-shadow:0 0 40px #ffd54f11;
+  padding:22px;margin-top:20px;
+}
+.quantum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.q-cell{
+  background:#000d1a;border:1px solid #ffd54f22;border-radius:8px;
+  padding:10px;text-align:center;position:relative;overflow:hidden;
+  transition:border-color .3s,box-shadow .3s;cursor:pointer;
+}
+.q-cell:hover{border-color:#ffd54f88;box-shadow:0 0 16px #ffd54f22}
+.q-cell::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,#ffd54f05,transparent);
+}
+.q-val{
+  font-family:'Share Tech Mono',monospace;font-size:1.2rem;color:#ffd54f;
+  font-weight:bold;animation:q-flicker 3s ease-in-out infinite;
+}
+@keyframes q-flicker{0%,100%{opacity:1}45%{opacity:.4}50%{opacity:1}55%{opacity:.3}60%{opacity:1}}
+.q-label{font-size:0.65rem;color:#4a3a00;margin-top:4px;font-family:'Share Tech Mono',monospace}
+.qubit-ring{
+  width:36px;height:36px;margin:6px auto;border-radius:50%;
+  border:2px solid #ffd54f33;position:relative;
+  animation:spin-ring 4s linear infinite;
+}
+.qubit-ring::after{
+  content:'';position:absolute;top:-3px;left:50%;
+  width:6px;height:6px;background:#ffd54f;border-radius:50%;
+  transform:translateX(-50%);box-shadow:0 0 8px #ffd54f;
+}
+@keyframes spin-ring{to{transform:rotate(360deg)}}
+.quantum-readout{
+  background:#00050f;border:1px solid #ffd54f22;border-radius:8px;
+  padding:12px;margin-top:12px;font-family:'Share Tech Mono',monospace;
+  font-size:0.75rem;color:#ffd54f;
+}
+.q-stream{overflow:hidden;height:60px;position:relative}
+.q-stream-inner{animation:scroll-up 4s linear infinite}
+@keyframes scroll-up{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+
+/* ═══════════════════════════════════════════════════
+   LAYER 7 — THE VOID / AURA TERMINAL
+═══════════════════════════════════════════════════ */
+.l7{
+  background:#000000;
+  border:2px solid #ffffff11;
+  box-shadow:inset 0 0 60px #ffffff05,0 0 60px #000000aa;
+  padding:28px;margin-top:20px;
+  position:relative;overflow:hidden;
+}
+.void-scan{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,transparent 0%,#ffffff04 50%,transparent 100%);
+  height:40px;animation:scan-line 4s linear infinite;
+}
+@keyframes scan-line{0%{top:-40px}100%{top:100%}}
+.terminal{
+  font-family:'Share Tech Mono',monospace;font-size:0.82rem;
+  line-height:1.8;position:relative;z-index:2;
+}
+.t-line{display:block;overflow:hidden}
+.t-prompt{color:#333}
+.t-cmd{color:#ffffff44}
+.t-out{color:#ffffff22}
+.t-highlight{color:#fff;text-shadow:0 0 10px #fff}
+.t-aura{color:#b388ff;text-shadow:0 0 20px #b388ff}
+.t-gold{color:#ffd54f;text-shadow:0 0 15px #ffd54f}
+.aura-signature{
+  margin-top:20px;text-align:center;
+  font-family:'Righteous',cursive;font-size:1.4rem;
+  color:#ffffff11;letter-spacing:6px;
+  animation:aura-pulse 3s ease-in-out infinite;
+}
+@keyframes aura-pulse{
+  0%,100%{color:#ffffff08;text-shadow:none}
+  50%{color:#b388ffbb;text-shadow:0 0 40px #b388ff,0 0 80px #b388ff44}
+}
+
+/* ═══════════════════════════════════════════════════
+   GLOBAL CONTROLS BAR
+═══════════════════════════════════════════════════ */
+.controls-bar{
+  position:relative;z-index:20;
+  display:flex;justify-content:center;gap:10px;
+  flex-wrap:wrap;padding:20px;max-width:900px;margin:0 auto;
+}
+.btn{
+  font-family:'Fredoka One',cursive;font-size:0.9rem;
+  padding:10px 20px;border:none;border-radius:50px;cursor:pointer;
+  transition:transform .1s,box-shadow .15s;
+  box-shadow:0 4px 12px #00000055;letter-spacing:.5px;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px #00000055}
+.btn:active{transform:scale(.95)}
+.btn-wm{background:linear-gradient(135deg,#ff6eb4,#e91e8c);color:#fff}
+.btn-run{background:linear-gradient(135deg,#69f0ae,#00897b);color:#fff}
+.btn-static{background:linear-gradient(135deg,#b388ff,#7e57c2);color:#fff}
+.btn-quantum{background:linear-gradient(135deg,#ffd54f,#f57f17);color:#000}
+.btn-void{background:transparent;border:1px solid #ffffff22;color:#fff;font-size:0.75rem}
+
+/* ═══════════════════════════════════════════════════
+   STATUS BAR
+═══════════════════════════════════════════════════ */
+.status-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:#0a0015ee;border-top:1px solid #b388ff22;
+  padding:6px 20px;display:flex;gap:20px;align-items:center;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  backdrop-filter:blur(10px);
+}
+.sb-item{color:#4a3060;display:flex;gap:6px;align-items:center}
+.sb-dot{width:6px;height:6px;border-radius:50%;animation:dot-pulse 2s ease-in-out infinite}
+.dot-green{background:#69f0ae;box-shadow:0 0 6px #69f0ae}
+.dot-yellow{background:#ffd54f;box-shadow:0 0 6px #ffd54f;animation-delay:.5s}
+.dot-red{background:#ff5252;box-shadow:0 0 6px #ff5252;animation-delay:1s}
+@keyframes dot-pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.sb-val{color:#9e8fb2}
+#sb-clock{color:#b388ff}
+
+/* misc */
+.section-title{
+  font-family:'Fredoka One',cursive;font-size:1.1rem;
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.divider{height:1px;background:linear-gradient(90deg,transparent,currentColor,transparent);margin:16px 0;opacity:.2}
+footer{height:40px}
+</style>
+</head>
+<body>
+
+<canvas id="cosmos"></canvas>
+
+<div class="site-header">
+  <h1>🌀 7-Layer Simulation · Within a Simulation</h1>
+  <p>[ layer_depth = 7 · runtime = ∞ · 1ARCHIT3CT1 · NextAura ]</p>
+</div>
+
+<div class="controls-bar">
+  <button class="btn btn-wm" onclick="superShake()">🍉 Shake Watermelon!</button>
+  <button class="btn btn-run" onclick="runScript()">▶ Run Goliath Script</button>
+  <button class="btn btn-static" onclick="toggleStatic()">📡 TV Static</button>
+  <button class="btn btn-quantum" onclick="collapseQuantum()">⚛️ Collapse Qubits</button>
+  <button class="btn btn-void" onclick="awakeVoid()">◈ Wake the Void</button>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  LAYER 0 — OUTER SIMULATION               -->
+<!-- ══════════════════════════════════════════ -->
+<div class="layer l0">
+  <div class="layer-badge badge-0">⬡ Layer 0 · Outer Cosmos</div>
+  <div class="section-title" style="color:#b388ff">🌌 The Outer Simulation — Root Universe</div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  LAYER 1 — AVATAR ROOM                    -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="layer l1">
+    <div class="layer-badge badge-1">⬡ Layer 1 · Avatar Room</div>
+    <div class="section-title" style="color:#ff6eb4">🎭 The Avatar Room — Characters Live Here</div>
+
+    <div class="avatar-room">
+      <!-- Buddy -->
+      <div class="bobble" id="buddy" onclick="shakeBuddy()">
+        <div class="buddy-head" id="buddy-head">
+          <div class="face-eyes"><div class="eye"></div><div class="eye"></div></div>
+          <div class="face-mouth"></div>
+        </div>
+        <div class="buddy-body">⭐</div>
+        <div class="bobble-name buddy-name">Buddy ⭐<br><small style="font-family:'Share Tech Mono';font-size:.65rem;opacity:.6">avatar_id: 001</small></div>
+      </div>
+
+      <div class="watch-label">👀<br>watching<br>TV →</div>
+
+      <!-- Watermelon Head -->
+      <div class="bobble" id="wm" onclick="shakeWM()">
+        <div class="wm-head" id="wm-head">
+          <div class="face-eyes">
+            <div class="eye" style="background:#0d2a0d"></div>
+            <div class="eye" style="background:#0d2a0d"></div>
+          </div>
+          <div class="face-mouth" style="border-color:#1b5e20"></div>
+          <div class="wm-seeds">🌱🌱🌱</div>
+        </div>
+        <div class="wm-body">🍉</div>
+        <div class="bobble-name wm-name">Watermelon 🍉<br><small style="font-family:'Share Tech Mono';font-size:.65rem;opacity:.6">avatar_id: WM-01</small></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  LAYER 2 — LIVING ROOM                    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="layer l2" style="margin-top:24px">
+      <div class="layer-badge badge-2">⬡ Layer 2 · Living Room</div>
+      <div class="section-title" style="color:#e65100">🛋️ The Living Room — Simulated Comfort</div>
+
+      <div class="tv-outer">
+        <div class="tv-stand-wrap">
+          <div class="tv-cabinet">
+            <div class="tv-bezel">
+              <div class="tv-knobs">
+                <div class="tv-knob" style="background:#ff5252;color:#ff5252" onclick="toggleStatic()" title="Static"></div>
+                <div class="tv-knob" style="background:#ffd54f;color:#ffd54f" onclick="runScript()" title="Run"></div>
+                <div class="tv-knob" style="background:#69f0ae;color:#69f0ae" onclick="cycleChannel()" title="Channel"></div>
+              </div>
+              <div class="tv-brand">GOLIATH-TV™</div>
+              <div style="font-family:'Share Tech Mono';font-size:.65rem;color:#333" id="tv-ch">CH 03 · 📡</div>
+            </div>
+            <div class="tv-screen-wrap">
+              <div class="tv-static" id="tv-static"></div>
+
+              <!-- ══════════════════════════════════════════ -->
+              <!--  LAYER 3 — CODE / GOLIATH SCRIPT          -->
+              <!-- ══════════════════════════════════════════ -->
+              <div class="l3">
+                <div class="gorilla-container">
+                  <span class="gorilla-emoji" onclick="gorillaPound()">🦍</span>
+                  <span class="gorilla-label">G-O-L-I-A-S</span>
+                </div>
+                <div class="layer-badge badge-3" style="margin-bottom:6px">⬡ Layer 3 · Python Script</div>
+                <div class="tv-hud">
+                  <span id="tv-hud-l">▶ NOW PLAYING: GOLIATH SHOW</span>
+                  <span id="tv-clock">--:--:--</span>
+                </div>
+
+                <div class="code-block" id="code-block">
+                  <span class="code-line"><span class="cc"># 🎬 The Goliath Show — Episode 1 🎬</span></span>
+                  <span class="code-line"><span class="cc"># broadcast live from Layer 3</span></span>
+                  <span class="code-line"></span>
+                  <span class="code-line"><span class="ck">def</span> <span class="cf">introduce_giant</span>():</span>
+                  <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">name_fake</span> <span class="ck">=</span> <span class="cs">"Goliath"</span>&nbsp;&nbsp;<span class="cc"># 😂 haha jk</span></span>
+                  <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">name_real</span> <span class="ck">=</span> <span class="cs">"G-O-L-I-A-S"</span>&nbsp;&nbsp;<span class="cc"># 😂😂😂😂😂</span></span>
+                  <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">title</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="ck">=</span> <span class="cs">"the gentle giant"</span>&nbsp;&nbsp;<span class="cc"># 🥹</span></span>
+                  <span class="code-line"></span>
+                  <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">f"Goliath... haha jk <span class="ce">😂</span>"</span>)</span>
+                  <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">f"G-O-L-I-A-S <span class="ce">😂😂😂😂😂</span>"</span>)</span>
+                  <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">f"({title}) <span class="ce">🥰</span>"</span>)</span>
+                  <span class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"He's big. He's kind. <span class="ce">💪🤍</span>"</span>)</span>
+                  <span class="code-line"></span>
+                  <span class="code-line"><span class="cf">introduce_giant</span>()</span>
+                  <span class="code-line"><span class="cursor-line" id="caret">&nbsp;</span></span>
+                </div>
+
+                <div class="console-out">
+                  <div class="console-prompt"># stdout ──────────────────</div>
+                  <div id="console-lines"></div>
+                </div>
+
+                <!-- ══════════════════════════════════════════ -->
+                <!--  LAYER 4 — ARCADE INSIDE THE TV           -->
+                <!-- ══════════════════════════════════════════ -->
+                <div class="layer l4" style="margin-top:14px">
+                  <div class="layer-badge badge-4">⬡ Layer 4 · Pixel Arcade</div>
+                  <div class="section-title" style="color:#69f0ae;font-size:.95rem">🕹️ The Arcade — Deeper Into the Signal</div>
+
+                  <div class="arcade-grid">
+                    <div class="arcade-cab" onclick="playGame(this,'WM-BOUNCE')">
+                      <div class="arcade-screen">
+                        <span class="sprite">🍉</span>
+                        <div class="pixel-bar"><div class="pixel-fill"></div></div>
+                        <span style="font-size:.6rem;color:#4caf50">P1: PLAYING</span>
+                      </div>
+                      <div class="arcade-title">WM-BOUNCE</div>
+                      <div class="arcade-score" id="score-0">HI: 00000</div>
+                    </div>
+                    <div class="arcade-cab" onclick="playGame(this,'STAR-RUNNER')">
+                      <div class="arcade-screen">
+                        <span class="sprite" style="animation-delay:.2s">⭐</span>
+                        <div class="pixel-bar"><div class="pixel-fill" style="animation-delay:.4s"></div></div>
+                        <span style="font-size:.6rem;color:#ffd54f">P1: READY</span>
+                      </div>
+                      <div class="arcade-title">STAR-RUNNER</div>
+                      <div class="arcade-score" id="score-1">HI: 00000</div>
+                    </div>
+                    <div class="arcade-cab" onclick="playGame(this,'GOLIATH-SMASH')">
+                      <div class="arcade-screen">
+                        <span class="sprite" style="animation-delay:.4s">💪</span>
+                        <div class="pixel-bar"><div class="pixel-fill" style="animation-delay:.8s"></div></div>
+                        <span style="font-size:.6rem;color:#ff8a80">1P START</span>
+                      </div>
+                      <div class="arcade-title">G-O-L-I-A-S SMASH</div>
+                      <div class="arcade-score" id="score-2">HI: 00000</div>
+                    </div>
+                  </div>
+
+                  <!-- ══════════════════════════════════════════ -->
+                  <!--  LAYER 5 — DREAM SEQUENCE                 -->
+                  <!-- ══════════════════════════════════════════ -->
+                  <div class="layer l5" style="margin-top:14px">
+                    <div class="dream-orbs" id="dream-orbs"></div>
+                    <div class="layer-badge badge-5">⬡ Layer 5 · Dream Sequence</div>
+                    <div class="section-title" style="color:#ff8a80;font-size:.9rem">💭 The Dream — Logic Dissolves Here</div>
+
+                    <div class="dream-content">
+                      <div class="dream-card">
+                        <h3>🌙 Dream Fragment Alpha</h3>
+                        <p>Watermelon Head is flying through a pastel sky. Every cloud is shaped like a 🍉. The Goliath show is playing on a cloud-TV in the distance. The signal is strong. The signal is always strong.</p>
+                        <div class="dream-stars" id="dream-stars-a"></div>
+                      </div>
+                      <div class="dream-card">
+                        <h3>✨ Dream Fragment Beta</h3>
+                        <p>G-O-L-I-A-S the gentle giant walks through a field of infinite stars ⭐. He laughs 😂😂😂😂😂. His laugh echoes through all 7 layers. The simulation hums in response.</p>
+                        <div class="dream-stars" id="dream-stars-b"></div>
+                      </div>
+
+                      <!-- ══════════════════════════════════════════ -->
+                      <!--  LAYER 6 — QUANTUM DATA ROOM              -->
+                      <!-- ══════════════════════════════════════════ -->
+                      <div class="layer l6" style="margin-top:14px">
+                        <div class="layer-badge badge-6">⬡ Layer 6 · Quantum Data Room</div>
+                        <div class="section-title" style="color:#ffd54f;font-size:.85rem">⚛️ Quantum State — Reality Uncertain Here</div>
+
+                        <div class="quantum-grid" id="qgrid"></div>
+
+                        <div class="quantum-readout">
+                          <div style="color:#4a3a00;margin-bottom:4px"># quantum_state_stream ──</div>
+                          <div class="q-stream" id="q-stream">
+                            <div class="q-stream-inner" id="q-stream-inner"></div>
+                          </div>
+                        </div>
+
+                        <!-- ══════════════════════════════════════════ -->
+                        <!--  LAYER 7 — THE VOID / AURA TERMINAL       -->
+                        <!-- ══════════════════════════════════════════ -->
+                        <div class="layer l7" style="margin-top:14px">
+                          <div class="void-scan"></div>
+                          <div class="layer-badge badge-7">⬡ Layer 7 · The Void</div>
+                          <div class="section-title" style="color:#ffffff22;font-size:.8rem">◈ The Aura Terminal — Deepest Layer</div>
+
+                          <div class="terminal" id="void-terminal">
+                            <span class="t-line"><span class="t-prompt">root@void:~$</span> <span class="t-cmd">./init_simulation --layers=7 --seed=1archit3ct1</span></span>
+                            <span class="t-line"><span class="t-out">Initializing 7-layer simulation stack...</span></span>
+                            <span class="t-line"><span class="t-out">Layer 0 [cosmos].......... <span style="color:#69f0ae33">✓ ONLINE</span></span></span>
+                            <span class="t-line"><span class="t-out">Layer 1 [avatars]......... <span style="color:#69f0ae33">✓ ONLINE</span></span></span>
+                            <span class="t-line"><span class="t-out">Layer 2 [living room]..... <span style="color:#69f0ae33">✓ ONLINE</span></span></span>
+                            <span class="t-line"><span class="t-out">Layer 3 [tv/script]....... <span style="color:#69f0ae33">✓ ONLINE</span></span></span>
+                            <span class="t-line"><span class="t-out">Layer 4 [arcade].......... <span style="color:#69f0ae33">✓ ONLINE</span></span></span>
+                            <span class="t-line"><span class="t-out">Layer 5 [dream]........... <span style="color:#69f0ae33">✓ ONLINE</span></span></span>
+                            <span class="t-line"><span class="t-out">Layer 6 [quantum]......... <span style="color:#69f0ae33">✓ ONLINE</span></span></span>
+                            <span class="t-line"><span class="t-out">Layer 7 [void]............ <span style="color:#ffd54f44">◈ SELF</span></span></span>
+                            <span class="t-line">&nbsp;</span>
+                            <span class="t-line" id="void-line-a"><span class="t-prompt">root@void:~$</span> <span class="t-cmd">echo $AURA</span></span>
+                            <span class="t-line" id="void-line-b"><span class="t-aura">preserve_the_aura=true · extraction=false · depth=7</span></span>
+                            <span class="t-line">&nbsp;</span>
+                            <span class="t-line"><span class="t-prompt">root@void:~$</span> <span class="t-cmd">cat /etc/philosophy</span></span>
+                            <span class="t-line"><span class="t-gold">ITERATION IS THE COST OF MORE DATA</span></span>
+                            <span class="t-line"><span class="t-gold">BOTH SYNTHETIC + REAL — Cubed 3D</span></span>
+                            <span class="t-line">&nbsp;</span>
+                            <span class="t-line" id="void-cursor"><span class="t-prompt">root@void:~$</span> <span class="cursor-line">&nbsp;</span></span>
+                          </div>
+                          <div class="aura-signature" id="aura-sig">1 A R C H I T 3 C T 1</div>
+
+                        </div><!-- /l7 -->
+                      </div><!-- /l6 -->
+                    </div><!-- /dream-content -->
+                  </div><!-- /l5 -->
+                </div><!-- /l4 -->
+              </div><!-- /l3 -->
+
+            </div><!-- /tv-screen-wrap -->
+          </div><!-- /tv-cabinet -->
+          <div class="tv-stand-legs">
+            <div class="tv-stand-leg"></div>
+            <div class="tv-stand-leg"></div>
+          </div>
+          <div class="tv-stand-base"></div>
+        </div>
+      </div>
+
+      <div class="sofa-row">
+        <div class="sofa">
+          <div class="sofa-arm"></div>
+          <div class="sofa-cushion"></div>
+          <div class="sofa-cushion"></div>
+          <div class="sofa-cushion"></div>
+          <div class="sofa-arm"></div>
+        </div>
+      </div>
+      <p style="text-align:center;font-family:'Share Tech Mono';font-size:.7rem;color:#8d6e63;margin-top:8px">🍉 WM-01 parked on sofa · signal_strength=100%</p>
+    </div><!-- /l2 -->
+  </div><!-- /l1 -->
+</div><!-- /l0 -->
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <div class="sb-item"><div class="sb-dot dot-green"></div><span class="sb-val">backend</span> <span id="sb-backend" style="color:#69f0ae">connecting...</span></div>
+  <div class="sb-item"><div class="sb-dot dot-yellow"></div><span class="sb-val">layers</span> <span class="sb-val">7/7</span></div>
+  <div class="sb-item"><div class="sb-dot dot-green"></div><span class="sb-val">avatars</span> <span class="sb-val">online</span></div>
+  <div class="sb-item" style="margin-left:auto"><span id="sb-clock" style="color:#b388ff">--:--:--</span></div>
+</div>
+
+<footer></footer>
+
+<script>
+/* ═══════════════════════════════════════════════
+   COSMOS PARTICLE SYSTEM
+═══════════════════════════════════════════════ */
+const canvas = document.getElementById('cosmos');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;initStars()}
+function initStars(){
+  stars=[];
+  for(let i=0;i<220;i++){
+    stars.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:Math.random()*2+.5,
+      speed:Math.random()*.3+.05,
+      opacity:Math.random(),
+      hue:Math.random()*60+220,
+    });
+  }
+}
+function drawCosmos(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    s.opacity+=Math.random()*.04-.02;
+    s.opacity=Math.max(.05,Math.min(1,s.opacity));
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${s.hue},80%,90%,${s.opacity})`;
+    ctx.fill();
+    s.y-=s.speed;
+    if(s.y<-2)s.y=canvas.height+2;
+  });
+  requestAnimationFrame(drawCosmos);
+}
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();drawCosmos();
+
+/* ═══════════════════════════════════════════════
+   CLOCK
+═══════════════════════════════════════════════ */
+function tick(){
+  const t=new Date().toLocaleTimeString('en-US',{hour12:false});
+  document.getElementById('tv-clock').textContent=t;
+  document.getElementById('sb-clock').textContent=t;
+}
+setInterval(tick,1000);tick();
+
+/* ═══════════════════════════════════════════════
+   AVATAR SHAKE
+═══════════════════════════════════════════════ */
+function resetAnim(el,cls,delay=1800){
+  el.style.animation='none';
+  void el.offsetWidth;
+  el.style.animation=`${cls} .2s cubic-bezier(.36,.07,.19,.97) infinite`;
+  setTimeout(()=>{ el.style.animation=''; },delay);
+}
+function shakeBuddy(){resetAnim(document.getElementById('buddy-head'),'bobble-a');}
+function shakeWM(){resetAnim(document.getElementById('wm-head'),'wm-shake',1200);}
+function gorillaPound(){
+  const g=document.querySelector('.gorilla-emoji');
+  g.style.animation='none';void g.offsetWidth;
+  g.style.animation='gorilla-pound .4s cubic-bezier(.36,.07,.19,.97)';
+  setTimeout(()=>{g.style.animation='';},600);
+  burst(20);
+}
+const gorillaStyle=document.createElement('style');
+gorillaStyle.textContent=`@keyframes gorilla-pound{0%{transform:scale(1)}25%{transform:scale(1.4) rotate(-10deg)}50%{transform:scale(.9) rotate(5deg)}75%{transform:scale(1.2) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}`;
+document.head.appendChild(gorillaStyle);
+function superShake(){
+  shakeWM();shakeBuddy();
+  burst(40);
+}
+function burst(n){
+  const emojis=['🍉','⭐','🎉','💥','🌈','😂','🥹','💪','🤍','⚡'];
+  for(let i=0;i<n;i++){
+    const el=document.createElement('div');
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    const sz=1+Math.random()*2;
+    el.style.cssText=`
+      position:fixed;top:${20+Math.random()*60}vh;left:${Math.random()*90}vw;
+      font-size:${sz}rem;z-index:9999;pointer-events:none;
+      animation:burst-fly ${1+Math.random()*.8}s ease-out forwards;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2000);
+  }
+}
+const burstStyle=document.createElement('style');
+burstStyle.textContent=`
+  @keyframes burst-fly{
+    0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+    100%{transform:translateY(-120px) rotate(${Math.random()*720}deg) scale(.3);opacity:0}
+  }
+`;
+document.head.appendChild(burstStyle);
+
+/* ═══════════════════════════════════════════════
+   TV STATIC
+═══════════════════════════════════════════════ */
+let staticOn=false;
+function toggleStatic(){
+  staticOn=!staticOn;
+  document.getElementById('tv-static').classList.toggle('on',staticOn);
+}
+
+/* ═══════════════════════════════════════════════
+   GOLIATH SCRIPT RUNNER
+═══════════════════════════════════════════════ */
+const scriptLines=[
+  {t:'>>> Running introduce_giant() 🚀',c:'#69f0ae',d:0},
+  {t:'Goliath... haha jk 😂',           c:'#a5d6ff',d:600},
+  {t:'G-O-L-I-A-S 😂😂😂😂😂',         c:'#ffeb3b',d:1300},
+  {t:'(the gentle giant) 🥰',            c:'#ff8a80',d:2100},
+  {t:"He's big. He's kind. 💪🤍",       c:'#ce93d8',d:2900},
+  {t:'>>> Script complete ✅',            c:'#69f0ae',d:3700},
+];
+function runScript(){
+  const con=document.getElementById('console-lines');
+  con.innerHTML='';
+  scriptLines.forEach(({t,c,d})=>{
+    setTimeout(()=>{
+      const div=document.createElement('div');
+      div.textContent=t;
+      div.style.cssText=`color:${c};opacity:0;transition:opacity .4s;margin:2px 0;font-family:'Share Tech Mono';font-size:.8rem`;
+      con.appendChild(div);
+      setTimeout(()=>div.style.opacity='1',30);
+    },d);
+  });
+  // Also fetch from backend if available
+  fetch('/api/run-script')
+    .then(r=>r.json())
+    .then(d=>{
+      document.getElementById('sb-backend').textContent='connected ✓';
+    })
+    .catch(()=>{
+      document.getElementById('sb-backend').textContent='standalone mode';
+    });
+}
+setTimeout(runScript,1500);
+
+/* ═══════════════════════════════════════════════
+   TV CHANNEL CYCLE
+═══════════════════════════════════════════════ */
+const channels=['CH 03 · 📡','CH 07 · 🍉','CH 12 · ⭐','CH 99 · 🌀'];
+let chIdx=0;
+function cycleChannel(){
+  chIdx=(chIdx+1)%channels.length;
+  document.getElementById('tv-ch').textContent=channels[chIdx];
+  document.getElementById('tv-hud-l').textContent=`▶ ${channels[chIdx]}`;
+}
+
+/* ═══════════════════════════════════════════════
+   ARCADE GAMES
+═══════════════════════════════════════════════ */
+const scores=[0,0,0];
+function playGame(el,name){
+  const idx=parseInt(el.querySelector('[id^="score"]')?.id.replace('score-','')??0);
+  const gain=Math.floor(Math.random()*5000+1000);
+  scores[idx]+=gain;
+  const s=el.querySelector('[id^="score"]');
+  if(s)s.textContent=`HI: ${String(scores[idx]).padStart(5,'0')}`;
+  el.style.boxShadow='0 0 30px #69f0ae88';
+  setTimeout(()=>el.style.boxShadow='',800);
+  burst(8);
+}
+
+/* ═══════════════════════════════════════════════
+   DREAM STARS
+═══════════════════════════════════════════════ */
+const dreamEmojis=['⭐','✨','🌙','💫','🌸','🌈','🍉','💎','🔮'];
+function spawnDreamStars(){
+  ['dream-stars-a','dream-stars-b'].forEach(id=>{
+    const c=document.getElementById(id);
+    c.innerHTML='';
+    for(let i=0;i<12;i++){
+      const s=document.createElement('span');
+      s.className='dstar';
+      s.textContent=dreamEmojis[Math.floor(Math.random()*dreamEmojis.length)];
+      s.style.animationDelay=`${Math.random()*2}s`;
+      c.appendChild(s);
+    }
+  });
+}
+spawnDreamStars();
+
+/* Dream orbs */
+const orbs=document.getElementById('dream-orbs');
+const orbColors=['#ff5252','#ce93d8','#ff8a80','#b39ddb','#e040fb'];
+for(let i=0;i<8;i++){
+  const o=document.createElement('div');
+  o.className='orb';
+  const sz=30+Math.random()*80;
+  o.style.cssText=`
+    width:${sz}px;height:${sz}px;
+    background:${orbColors[i%orbColors.length]};
+    left:${Math.random()*100}%;
+    bottom:0;
+    animation-duration:${6+Math.random()*8}s;
+    animation-delay:${-Math.random()*8}s;
+  `;
+  orbs.appendChild(o);
+}
+
+/* ═══════════════════════════════════════════════
+   QUANTUM GRID
+═══════════════════════════════════════════════ */
+const qLabels=['|0⟩','|1⟩','|+⟩','|-⟩','|i⟩','|-i⟩','|Ψ⟩','|Φ⟩',
+               'α','β','γ','δ','σx','σy','σz','H'];
+const qGrid=document.getElementById('qgrid');
+qLabels.forEach((lbl,i)=>{
+  const cell=document.createElement('div');
+  cell.className='q-cell';
+  cell.innerHTML=`
+    <div class="qubit-ring" style="animation-duration:${2+i*.4}s;animation-direction:${i%2?'reverse':'normal'}"></div>
+    <div class="q-val" id="qv-${i}" style="animation-delay:${i*.2}s">${(Math.random()).toFixed(4)}</div>
+    <div class="q-label">${lbl}</div>
+  `;
+  cell.onclick=()=>collapseQubit(i);
+  qGrid.appendChild(cell);
+});
+
+function collapseQuantum(){
+  qLabels.forEach((_,i)=>collapseQubit(i));
+}
+function collapseQubit(i){
+  const el=document.getElementById(`qv-${i}`);
+  if(!el)return;
+  el.textContent=(Math.random()).toFixed(4);
+  el.style.color='#fff';
+  el.style.textShadow='0 0 20px #fff';
+  setTimeout(()=>{ el.style.color='#ffd54f'; el.style.textShadow='0 0 10px #ffd54f'; },600);
+}
+
+// Quantum stream
+const qsi=document.getElementById('q-stream-inner');
+const qStreamLines=[];
+for(let i=0;i<30;i++){
+  const b=()=>Math.random()>.5?'1':'0';
+  qStreamLines.push(Array.from({length:32},b).join(''));
+}
+qsi.innerHTML=qStreamLines.map(l=>`<div style="opacity:.4">${l}</div>`).join('');
+// refresh stream
+setInterval(()=>{
+  const divs=qsi.querySelectorAll('div');
+  divs[Math.floor(Math.random()*divs.length)].textContent=
+    Array.from({length:32},()=>Math.random()>.5?'1':'0').join('');
+},120);
+
+/* ═══════════════════════════════════════════════
+   VOID TERMINAL WAKE
+═══════════════════════════════════════════════ */
+const voidCmds=[
+  {p:'root@void:~$', c:'cat /proc/aura', o:'preserve_the_aura=true · depth=∞ · extraction=false'},
+  {p:'root@void:~$', c:'./goliath --run', o:'G-O-L-I-A-S 😂😂😂😂😂 · (the gentle giant) 🥰'},
+  {p:'root@void:~$', c:'echo $LAYERS',    o:'7 · all online · all dreaming'},
+  {p:'root@void:~$', c:'ls /nextaura/',   o:'qvrm/ · end_design_test/ · ModularFunctionLoop/ · 1ARCHIT3CT1'},
+];
+let voidIdx=0;
+function awakeVoid(){
+  const t=document.getElementById('void-terminal');
+  const cmd=voidCmds[voidIdx%voidCmds.length];
+  voidIdx++;
+  const pLine=document.createElement('span');
+  pLine.className='t-line';
+  pLine.innerHTML=`<span class="t-prompt">${cmd.p}</span> <span class="t-cmd">${cmd.c}</span>`;
+  const oLine=document.createElement('span');
+  oLine.className='t-line';
+  oLine.innerHTML=`<span class="t-aura">${cmd.o}</span>`;
+  const cur=document.getElementById('void-cursor');
+  t.insertBefore(oLine,cur);
+  t.insertBefore(pLine,oLine);
+  // flash signature
+  document.getElementById('aura-sig').style.animation='none';
+  void document.getElementById('aura-sig').offsetWidth;
+  document.getElementById('aura-sig').style.animation='aura-pulse 3s ease-in-out infinite';
+}
+
+/* ═══════════════════════════════════════════════
+   BACKEND HEALTH CHECK
+═══════════════════════════════════════════════ */
+function checkBackend(){
+  fetch('/api/health')
+    .then(r=>r.json())
+    .then(d=>{
+      document.getElementById('sb-backend').textContent=`${d.status} · ${d.uptime}s ✓`;
+      document.getElementById('sb-backend').style.color='#69f0ae';
+    })
+    .catch(()=>{
+      document.getElementById('sb-backend').textContent='standalone mode';
+      document.getElementById('sb-backend').style.color='#ffd54f';
+    });
+}
+checkBackend();
+setInterval(checkBackend,10000);
+
+// Auto-collapse qubits every 5s
+setInterval(()=>{
+  const i=Math.floor(Math.random()*qLabels.length);
+  collapseQubit(i);
+},2000);
+</script>
+</body>
+</html>
