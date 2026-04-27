@@ -10,7 +10,11 @@
   "destination": {
     "class": "mini_forest_catalog",
     "keep_as_separate_repo": true,
-    "primary_consumer": "l2_code"
+    "primary_consumer": "l2_code",
+    "canonical_destination_repo": {
+      "name": "KidsGameDimensionbuilder_free",
+      "remote": "https://github.com/mlopeznxtaura/KidsGameDimensionbuilder_free.git"
+    }
   },
   "control_plane": {
     "workspace_root": "D:\\NextAura\\L2EVAL",
