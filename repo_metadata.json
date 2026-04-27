@@ -1,0 +1,21 @@
+{
+  "repo_index": 1,
+  "repo_name": "KidsGameDimensionbuilder_free",
+  "classification": {
+    "type": "mini_forest_source",
+    "domain": "world_simulation",
+    "subtype": "dimensional_ui",
+    "layer_affinity": "L2_adjacent"
+  },
+  "destination": {
+    "class": "mini_forest_catalog",
+    "keep_as_separate_repo": true,
+    "primary_consumer": "l2_code"
+  },
+  "control_plane": {
+    "workspace_root": "D:\\NextAura\\L2EVAL",
+    "agents_file": "D:\\NextAura\\L2EVAL\\agents.json",
+    "corpus_seed_file": "D:\\NextAura\\L2EVAL\\repo_001_corpus.jsonl"
+  },
+  "status": "cataloged_for_migration"
+}
