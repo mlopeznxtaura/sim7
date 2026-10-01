@@ -1,0 +1,13 @@
+.git
+.gitignore
+*.log
+__pycache__
+*.pyc
+.venv
+venv
+.env
+.env.*
+.wrangler
+cloudflare/.wrangler
+README.md
+repo_metadata.json
